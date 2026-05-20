@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.0",
+    "@supabase/supabase-js": "^2.106.1",
     "astro": "^5.16.0"
   },
   "devDependencies": {

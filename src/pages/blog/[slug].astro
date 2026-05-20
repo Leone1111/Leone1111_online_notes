@@ -1,10 +1,11 @@
 ---
-import { getCollection, render } from "astro:content";
+import { render } from "astro:content";
 import FileDownloadList from "@components/FileDownloadList.astro";
 import ContentLayout from "@layouts/ContentLayout.astro";
+import { getPublicBlogPosts } from "../../lib/content/publicContent";
 
 export async function getStaticPaths() {
-  const posts = await getCollection("blog", ({ data }) => !data.draft && data.visibility === "public");
+  const posts = await getPublicBlogPosts();
   return posts.map((post) => ({
     params: { slug: post.id },
     props: { post }
@@ -12,10 +13,11 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { Content } = await render(post);
+const renderedPost = post.markdownEntry ? await render(post.markdownEntry) : null;
+const Content = renderedPost?.Content;
 ---
 
 <ContentLayout title={post.data.title} description={post.data.description} date={post.data.pubDate} tags={post.data.tags}>
   <FileDownloadList files={post.data.files} />
-  <Content />
+  {Content ? <Content /> : <div class="supabase-body" set:html={post.data.bodyHtml} />}
 </ContentLayout>

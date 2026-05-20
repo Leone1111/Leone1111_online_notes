@@ -1,10 +1,8 @@
 ---
-import { getCollection } from "astro:content";
 import BaseLayout from "@layouts/BaseLayout.astro";
 import SectionHeader from "@components/SectionHeader.astro";
+import { getPublicResources, type FileType } from "../lib/content/publicContent";
 import { withBasePath } from "../utils/paths";
-
-type FileType = "pdf" | "word" | "markdown" | "image" | "zip";
 
 const typeLabels: Record<FileType, string> = {
   pdf: "PDF",
@@ -14,41 +12,7 @@ const typeLabels: Record<FileType, string> = {
   zip: "ZIP"
 };
 
-const [blogPosts, notes, projects] = await Promise.all([
-  getCollection("blog", ({ data }) => !data.draft && data.visibility === "public"),
-  getCollection("notes", ({ data }) => data.visibility === "public"),
-  getCollection("projects", ({ data }) => data.visibility === "public")
-]);
-
-const resources = [
-  ...blogPosts.flatMap((post) =>
-    post.data.files.map((file) => ({
-      ...file,
-      sourceTitle: post.data.title,
-      sourceCategory: post.data.category,
-      sourceType: "科研/读书笔记",
-      sourceHref: `/blog/${post.id}`
-    }))
-  ),
-  ...notes.flatMap((note) =>
-    note.data.files.map((file) => ({
-      ...file,
-      sourceTitle: note.data.title,
-      sourceCategory: note.data.category,
-      sourceType: "轻量笔记",
-      sourceHref: `/notes/${note.id}`
-    }))
-  ),
-  ...projects.flatMap((project) =>
-    project.data.files.map((file) => ({
-      ...file,
-      sourceTitle: project.data.title,
-      sourceCategory: project.data.category,
-      sourceType: "代码项目 / 项目资料",
-      sourceHref: `/projects/${project.id}`
-    }))
-  )
-];
+const resources = await getPublicResources();
 
 const groupedResources = Object.entries(
   resources.reduce(
@@ -73,8 +37,8 @@ const groupedResources = Object.entries(
       <p class="eyebrow">Admin Upload</p>
       <h3>管理员上传功能：后续版本开放</h3>
       <p class="muted">
-        当前 V1.1 仍保持静态网站架构，不提供在线上传、在线编辑和在线删除。公开附件通过 Markdown frontmatter
-        里的 files 字段维护，文件本体建议放在 GitHub Releases、OneDrive、网盘或云存储。
+        当前 V2.1 只接入 Supabase 只读数据，不提供在线上传、在线编辑和在线删除。公开附件可以来自 Supabase，也可以继续通过 Markdown
+        frontmatter 里的 files 字段维护。
       </p>
     </article>
 
@@ -82,7 +46,7 @@ const groupedResources = Object.entries(
       resources.length === 0 ? (
         <article class="card pad empty-state">
           <h3>暂无公开附件</h3>
-          <p class="muted">给 Blog、Notes 或 Projects 的 frontmatter 添加 files 字段后，这里会自动出现下载入口。</p>
+          <p class="muted">当 Supabase 或 Markdown 内容中存在公开 files 字段后，这里会自动出现下载入口。</p>
         </article>
       ) : (
         <div class="resource-stack">

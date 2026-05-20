@@ -1,11 +1,12 @@
 ---
-import { getCollection, render } from "astro:content";
+import { render } from "astro:content";
 import FileDownloadList from "@components/FileDownloadList.astro";
 import ContentLayout from "@layouts/ContentLayout.astro";
+import { getPublicNotes } from "../../lib/content/publicContent";
 import { withBasePath } from "../../utils/paths";
 
 export async function getStaticPaths() {
-  const notes = await getCollection("notes", ({ data }) => data.visibility === "public");
+  const notes = await getPublicNotes();
   return notes.map((note) => ({
     params: { slug: note.id },
     props: { note }
@@ -13,7 +14,8 @@ export async function getStaticPaths() {
 }
 
 const { note } = Astro.props;
-const { Content } = await render(note);
+const renderedNote = note.markdownEntry ? await render(note.markdownEntry) : null;
+const Content = renderedNote?.Content;
 ---
 
 <ContentLayout
@@ -26,7 +28,7 @@ const { Content } = await render(note);
     <a class="button" href={withBasePath("/notes")}>返回笔记目录</a>
   </div>
   <FileDownloadList files={note.data.files} />
-  <Content />
+  {Content ? <Content /> : <div class="supabase-body" set:html={note.data.bodyHtml} />}
 </ContentLayout>
 
 <style>

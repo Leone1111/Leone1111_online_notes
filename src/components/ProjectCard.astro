@@ -7,7 +7,7 @@ interface Props {
     data: {
       title: string;
       description: string;
-      status: string;
+      status?: string;
       category?: string;
       tags: string[];
       github?: string;
@@ -17,11 +17,12 @@ interface Props {
 }
 
 const { project } = Astro.props;
+const status = project.data.status || "Project";
 ---
 
 <article class="card pad project-card">
   <div>
-    <p class="eyebrow">{project.data.status}</p>
+    <p class="eyebrow">{status}</p>
     <h3><a href={withBasePath(`/projects/${project.id}`)}>{project.data.title}</a></h3>
     <p>{project.data.description}</p>
     <div class="tag-list">

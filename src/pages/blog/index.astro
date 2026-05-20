@@ -1,12 +1,10 @@
 ---
-import { getCollection } from "astro:content";
 import BaseLayout from "@layouts/BaseLayout.astro";
 import SectionHeader from "@components/SectionHeader.astro";
+import { getPublicBlogPosts } from "../../lib/content/publicContent";
 import { withBasePath } from "../../utils/paths";
 
-const posts = (await getCollection("blog"))
-  .filter((post) => !post.data.draft && post.data.visibility === "public")
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const posts = await getPublicBlogPosts();
 
 const formatDate = (date: Date) =>
   new Intl.DateTimeFormat("zh-CN", {
@@ -16,15 +14,19 @@ const formatDate = (date: Date) =>
   }).format(date);
 
 const tags = Array.from(new Set(posts.flatMap((post) => post.data.tags)));
-const latestDate = posts[0]?.data.pubDate ?? new Date();
+const latestDate = posts[0]?.data.pubDate ?? posts[0]?.data.date ?? new Date();
 const calendarYear = latestDate.getFullYear();
 const calendarMonth = latestDate.getMonth();
 const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
 const firstWeekday = new Date(calendarYear, calendarMonth, 1).getDay();
 const activeDays = new Set(
   posts
-    .filter((post) => post.data.pubDate.getFullYear() === calendarYear && post.data.pubDate.getMonth() === calendarMonth)
-    .map((post) => post.data.pubDate.getDate())
+    .filter((post) => {
+      const date = post.data.pubDate ?? post.data.date;
+      return date?.getFullYear() === calendarYear && date?.getMonth() === calendarMonth;
+    })
+    .map((post) => (post.data.pubDate ?? post.data.date)?.getDate())
+    .filter((day): day is number => typeof day === "number")
 );
 ---
 
@@ -40,7 +42,9 @@ const activeDays = new Set(
         {
           posts.map((post) => (
             <article class="timeline-item">
-              <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+              <time datetime={(post.data.pubDate ?? post.data.date)?.toISOString()}>
+                {formatDate(post.data.pubDate ?? post.data.date ?? new Date())}
+              </time>
               <div class="card pad compact-post">
                 <h3>
                   <a href={withBasePath(`/blog/${post.id}`)}>{post.data.title}</a>

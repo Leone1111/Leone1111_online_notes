@@ -1,22 +1,19 @@
 ---
-import { getCollection } from "astro:content";
 import Hero from "@components/Hero.astro";
 import ProjectCard from "@components/ProjectCard.astro";
 import PostList from "@components/PostList.astro";
 import SectionHeader from "@components/SectionHeader.astro";
 import BaseLayout from "@layouts/BaseLayout.astro";
 import { researchAreas } from "@data/site";
+import { getPublicBlogPosts, getPublicProjects } from "../lib/content/publicContent";
 import { withBasePath } from "../utils/paths";
 
-const projects = (await getCollection("projects"))
-  .filter((project) => project.data.featured && project.data.visibility === "public")
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+const projects = (await getPublicProjects())
+  .filter((project) => project.data.featured)
+  .sort((a, b) => (b.data.date ?? new Date(0)).valueOf() - (a.data.date ?? new Date(0)).valueOf())
   .slice(0, 3);
 
-const posts = (await getCollection("blog"))
-  .filter((post) => !post.data.draft && post.data.visibility === "public")
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 4);
+const posts = (await getPublicBlogPosts()).slice(0, 4);
 ---
 
 <BaseLayout>

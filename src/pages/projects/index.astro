@@ -1,13 +1,11 @@
 ---
-import { getCollection } from "astro:content";
 import BaseLayout from "@layouts/BaseLayout.astro";
 import ProjectCard from "@components/ProjectCard.astro";
 import SectionHeader from "@components/SectionHeader.astro";
+import { getPublicProjects } from "../../lib/content/publicContent";
 import { withBasePath } from "../../utils/paths";
 
-const projects = (await getCollection("projects"))
-  .filter((project) => project.data.visibility === "public")
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const projects = await getPublicProjects();
 
 const projectDirectory = [
   {

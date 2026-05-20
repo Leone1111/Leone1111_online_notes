@@ -1,11 +1,12 @@
 ---
-import { getCollection, render } from "astro:content";
+import { render } from "astro:content";
 import FileDownloadList from "@components/FileDownloadList.astro";
 import ContentLayout from "@layouts/ContentLayout.astro";
+import { getPublicProjects } from "../../lib/content/publicContent";
 import { withBasePath } from "../../utils/paths";
 
 export async function getStaticPaths() {
-  const projects = await getCollection("projects", ({ data }) => data.visibility === "public");
+  const projects = await getPublicProjects();
   return projects.map((project) => ({
     params: { slug: project.id },
     props: { project }
@@ -13,7 +14,8 @@ export async function getStaticPaths() {
 }
 
 const { project } = Astro.props;
-const { Content } = await render(project);
+const renderedProject = project.markdownEntry ? await render(project.markdownEntry) : null;
+const Content = renderedProject?.Content;
 ---
 
 <ContentLayout
@@ -28,7 +30,7 @@ const { Content } = await render(project);
     {project.data.download && <a class="button" href={project.data.download} target="_blank" rel="noreferrer">资料下载</a>}
   </div>
   <FileDownloadList files={project.data.files} />
-  <Content />
+  {Content ? <Content /> : <div class="supabase-body" set:html={project.data.bodyHtml} />}
 </ContentLayout>
 
 <style>
