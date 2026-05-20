@@ -1,0 +1,111 @@
+---
+import { navItems, site } from "@data/site";
+import { withBasePath } from "../utils/paths";
+
+const currentPath = Astro.url.pathname;
+const isActive = (href: string) => {
+  const target = withBasePath(href);
+  return href === "/" ? currentPath === target || currentPath === target.slice(0, -1) : currentPath.startsWith(target);
+};
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href={withBasePath("/")} aria-label="返回首页">
+      <span class="brand-mark">L</span>
+      <span>
+        <strong>{site.name}</strong>
+        <small>Materials · ML · DFT</small>
+      </span>
+    </a>
+    <nav class="nav" aria-label="主导航">
+      {
+        navItems.map((item) => (
+          <a class:list={{ active: isActive(item.href) }} href={withBasePath(item.href)}>
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    border-bottom: 1px solid rgba(215, 224, 232, 0.82);
+    background: rgba(245, 247, 251, 0.9);
+    backdrop-filter: blur(16px);
+  }
+
+  .header-inner {
+    display: flex;
+    min-height: 72px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .brand-mark {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border-radius: 8px;
+    background: var(--ink);
+    color: #fff;
+    font-weight: 850;
+  }
+
+  .brand strong,
+  .brand small {
+    display: block;
+  }
+
+  .brand small {
+    color: var(--muted);
+    font-size: 0.72rem;
+    line-height: 1.2;
+  }
+
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 4px;
+  }
+
+  .nav a {
+    border-radius: 8px;
+    padding: 8px 10px;
+    color: var(--muted);
+    font-size: 0.92rem;
+    font-weight: 700;
+  }
+
+  .nav a:hover,
+  .nav a.active {
+    background: var(--surface);
+    color: var(--ink);
+  }
+
+  @media (max-width: 760px) {
+    .header-inner {
+      align-items: flex-start;
+      flex-direction: column;
+      padding: 14px 0;
+    }
+
+    .nav {
+      justify-content: flex-start;
+    }
+  }
+</style>

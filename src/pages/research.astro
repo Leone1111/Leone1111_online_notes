@@ -1,0 +1,106 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import SectionHeader from "@components/SectionHeader.astro";
+import { researchAreas } from "@data/site";
+import { withBasePath } from "../utils/paths";
+
+const areaIds = ["high-entropy-layered-oxides", "machine-learning-screening", "dft-workflow"];
+---
+
+<BaseLayout title="Research | Leone1111" description="研究方向：高熵钠离子层状材料、机器学习筛选和 DFT 计算。">
+  <section class="container page">
+    <SectionHeader
+      eyebrow="Research"
+      title="研究方向"
+      description="当前重点围绕高熵钠离子层状材料、机器学习筛选和 DFT 计算，建立从候选材料到机理解释的研究链路。"
+    />
+
+    <div class="research-stack">
+      {
+        researchAreas.map((area, index) => (
+          <article class="card pad research-card" id={areaIds[index]}>
+            <span class="index">0{index + 1}</span>
+            <div>
+              <h3>{area.title}</h3>
+              <p>{area.summary}</p>
+              <a class="text-link" href={withBasePath(area.href)}>{area.action}</a>
+              <div class="tag-list">
+                {area.keywords.map((keyword) => (
+                  <span class="tag">{keyword}</span>
+                ))}
+              </div>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <article class="card pad roadmap">
+      <p class="eyebrow">Research Workflow</p>
+      <h3>从材料问题到可展示成果</h3>
+      <ol>
+        <li>定义材料体系和目标性能，例如结构稳定性、扩散能力或电压平台。</li>
+        <li>整理文献、数据库和初始结构，形成候选材料空间。</li>
+        <li>使用 DFT 计算关键性质，建立高质量小样本数据。</li>
+        <li>训练机器学习模型做快速筛选，并解释重要特征。</li>
+        <li>把结果整理成论文笔记、项目页面和可复现实验记录。</li>
+      </ol>
+    </article>
+  </section>
+</BaseLayout>
+
+<style>
+  .research-stack {
+    display: grid;
+    gap: 18px;
+  }
+
+  .research-card {
+    display: grid;
+    grid-template-columns: 90px minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+
+  .index {
+    color: var(--accent);
+    font-size: 2.2rem;
+    font-weight: 850;
+    line-height: 1;
+  }
+
+  .research-card h3,
+  .roadmap h3 {
+    margin: 0 0 8px;
+  }
+
+  .research-card p {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .text-link {
+    display: inline-flex;
+    margin-top: 12px;
+    color: var(--accent-strong);
+    font-weight: 800;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .roadmap {
+    margin-top: 26px;
+  }
+
+  .roadmap ol {
+    margin-bottom: 0;
+    padding-left: 1.2rem;
+  }
+
+  @media (max-width: 640px) {
+    .research-card {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+  }
+</style>

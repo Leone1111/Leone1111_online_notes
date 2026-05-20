@@ -1,0 +1,32 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { withBasePath } from "../utils/paths";
+---
+
+<BaseLayout title="页面未找到 | Leone1111" description="这个页面不存在或链接已经移动。">
+  <section class="container page not-found">
+    <p class="eyebrow">404</p>
+    <h1>页面未找到</h1>
+    <p class="muted">这个链接暂时没有对应页面，可以回到首页或项目目录继续浏览。</p>
+    <div class="button-row">
+      <a class="button primary" href={withBasePath("/")}>返回首页</a>
+      <a class="button" href={withBasePath("/projects")}>查看项目目录</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    max-width: 720px;
+  }
+
+  .not-found h1 {
+    margin: 0 0 12px;
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    line-height: 1.1;
+  }
+
+  .not-found p:not(.eyebrow) {
+    margin: 0 0 24px;
+  }
+</style>

@@ -1,0 +1,99 @@
+---
+import { site } from "@data/site";
+import { withBasePath } from "../utils/paths";
+
+---
+
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">Academic Homepage</p>
+      <p class="hero-lines">
+        <span>研究方向：机器学习、钠电材料、高熵层状材料、第一性原理计算</span>
+        <span>其他：读书笔记、个人想法</span>
+      </p>
+      <div class="button-row">
+        <a class="button primary" href={withBasePath("/research")}>查看研究方向</a>
+        <a class="button" href={withBasePath("/projects")}>浏览项目作品</a>
+      </div>
+    </div>
+
+    <aside class="signal-panel" aria-label="研究信息摘要">
+      <div>
+        <span>Contact</span>
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding: 88px 0 64px;
+    background:
+      radial-gradient(circle at 78% 22%, rgba(15, 118, 110, 0.12), transparent 32%),
+      linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(237, 243, 248, 0.86));
+    border-bottom: 1px solid var(--line);
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 42px;
+    align-items: center;
+  }
+
+  .hero-copy p:not(.eyebrow) {
+    max-width: 720px;
+    margin: 18px 0 28px;
+    color: var(--muted);
+    font-size: 1.08rem;
+  }
+
+  .hero-lines span {
+    display: block;
+  }
+
+  .hero-lines span + span {
+    margin-top: 6px;
+  }
+
+  .signal-panel {
+    display: grid;
+    gap: 12px;
+  }
+
+  .signal-panel div {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.78);
+    padding: 18px;
+    box-shadow: var(--shadow);
+  }
+
+  .signal-panel span {
+    display: block;
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 850;
+    text-transform: uppercase;
+  }
+
+  .signal-panel strong,
+  .signal-panel a {
+    display: block;
+    margin-top: 6px;
+    font-size: 1.05rem;
+    font-weight: 800;
+  }
+
+  @media (max-width: 860px) {
+    .hero {
+      padding-top: 54px;
+    }
+
+    .hero-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

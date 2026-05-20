@@ -1,0 +1,147 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import SectionHeader from "@components/SectionHeader.astro";
+import { withBasePath } from "../utils/paths";
+
+const notes = (await getCollection("notes")).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat("zh-CN", {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  }).format(date);
+---
+
+<BaseLayout title="Notes | Leone1111" description="轻量化科研记录、读书摘记和工作备忘。">
+  <section class="container page">
+    <SectionHeader
+      eyebrow="Notes"
+      title="轻量笔记"
+      description="这里放更短、更轻的记录，比如一个实验想法、一条文献线索、一个计算经验。"
+    />
+    <div class="notes-layout">
+      <div class="notes-list">
+        {
+          notes.map((note) => (
+            <article class="note-row">
+              <time datetime={note.data.pubDate.toISOString()}>{formatDate(note.data.pubDate)}</time>
+              <div class="card pad note-item">
+                <h3>
+                  <a href={withBasePath(`/notes/${note.id}`)}>{note.data.title}</a>
+                </h3>
+                <p class="muted">{note.data.description}</p>
+                <div class="tag-list">
+                  {note.data.tags.map((tag) => (
+                    <span class="tag">{tag}</span>
+                  ))}
+                </div>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <aside class="card pad notes-directory" aria-label="笔记目录">
+        <p class="eyebrow">Directory</p>
+        <h3>笔记目录</h3>
+        <nav>
+          {
+            notes.map((note) => (
+              <a href={withBasePath(`/notes/${note.id}`)}>
+                <span>{formatDate(note.data.pubDate)}</span>
+                <strong>{note.data.title}</strong>
+              </a>
+            ))
+          }
+        </nav>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .notes-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 26px;
+    align-items: start;
+  }
+
+  .notes-list {
+    display: grid;
+    gap: 14px;
+  }
+
+  .note-row {
+    display: grid;
+    grid-template-columns: 132px minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+  }
+
+  .note-row time {
+    padding-top: 16px;
+    color: var(--accent);
+    font-size: 0.82rem;
+    font-weight: 850;
+  }
+
+  .note-item h3 {
+    margin: 0 0 8px;
+    font-size: 1.12rem;
+  }
+
+  .note-item p {
+    margin: 0;
+  }
+
+  .notes-directory {
+    position: sticky;
+    top: 88px;
+  }
+
+  .notes-directory h3 {
+    margin: 0 0 12px;
+  }
+
+  .notes-directory nav {
+    display: grid;
+    gap: 10px;
+  }
+
+  .notes-directory a {
+    display: grid;
+    gap: 3px;
+    border-left: 3px solid var(--line);
+    padding-left: 10px;
+  }
+
+  .notes-directory a:hover {
+    border-left-color: var(--accent);
+  }
+
+  .notes-directory span {
+    color: var(--muted);
+    font-size: 0.78rem;
+  }
+
+  .notes-directory strong {
+    color: var(--accent-strong);
+  }
+
+  @media (max-width: 860px) {
+    .notes-layout,
+    .note-row {
+      grid-template-columns: 1fr;
+    }
+
+    .note-row time {
+      padding-top: 0;
+    }
+
+    .notes-directory {
+      position: static;
+    }
+  }
+</style>

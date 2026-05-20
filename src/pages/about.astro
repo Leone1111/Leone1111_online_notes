@@ -1,0 +1,64 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import SectionHeader from "@components/SectionHeader.astro";
+import { skills } from "@data/site";
+---
+
+<BaseLayout title="About | Leone1111" description="关于 Leone1111 的教育背景、研究兴趣和技能栈。">
+  <section class="container page">
+    <SectionHeader
+      eyebrow="About"
+      title="关于我"
+      description="BUPT"
+    />
+
+    <div class="grid two">
+      <article class="card pad">
+        <h3>教育背景</h3>
+        <ul class="clean-list">
+          <li><strong>博士阶段</strong><span>材料科学 / 计算材料 / 机器学习材料方向</span></li>
+          <li><strong>研究训练</strong><span>高熵钠离子层状材料、DFT 计算、机器学习筛选</span></li>
+          <li><strong>学术表达</strong><span>论文阅读、科研博客、项目复盘和可复现实验记录</span></li>
+        </ul>
+      </article>
+
+      <article class="card pad">
+        <h3>研究兴趣</h3>
+        <p class="muted">
+          我希望用计算材料和数据驱动方法，理解复杂组分材料中的结构稳定性、离子扩散和性能趋势。
+          网站会持续整理我的科研问题、计算流程、项目代码和阶段性思考。
+        </p>
+      </article>
+    </div>
+
+    <article class="card pad skills-card">
+      <h3>技能栈</h3>
+      <div class="tag-list">
+        {skills.map((skill) => <span class="tag">{skill}</span>)}
+      </div>
+    </article>
+  </section>
+</BaseLayout>
+
+<style>
+  .clean-list {
+    display: grid;
+    gap: 16px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .clean-list li {
+    display: grid;
+    gap: 4px;
+  }
+
+  .clean-list span {
+    color: var(--muted);
+  }
+
+  .skills-card {
+    margin-top: 20px;
+  }
+</style>

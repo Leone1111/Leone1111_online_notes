@@ -1,0 +1,177 @@
+---
+import { site } from "@data/site";
+
+const githubUsername = new URL(site.github).pathname.replace(/^\/+/, "") || "Leone1111";
+const apiUrl = `https://api.github.com/users/${githubUsername}`;
+---
+
+<section class="card pad github-api-card" data-github-api data-username={githubUsername}>
+  <div>
+    <p class="eyebrow">External API</p>
+    <h3>GitHub 公开信息</h3>
+    <p class="muted">这里通过 GitHub API 自动读取公开资料，用来展示代码主页的实时信息。</p>
+  </div>
+
+  <div class="github-profile" data-state="loading">
+    <div class="avatar-placeholder" data-avatar></div>
+    <div>
+      <strong data-name>{githubUsername}</strong>
+      <span data-bio>正在读取 GitHub API...</span>
+    </div>
+  </div>
+
+  <div class="api-stats" aria-label="GitHub 公开统计">
+    <div>
+      <strong data-repos>--</strong>
+      <span>公开仓库</span>
+    </div>
+    <div>
+      <strong data-followers>--</strong>
+      <span>关注者</span>
+    </div>
+    <div>
+      <strong data-updated>--</strong>
+      <span>最近更新</span>
+    </div>
+  </div>
+
+  <div class="button-row api-actions">
+    <a class="button primary" href={site.github}>打开 GitHub</a>
+    <a class="button" href={apiUrl} target="_blank" rel="noreferrer">查看 API 返回数据</a>
+  </div>
+</section>
+
+<script is:inline>
+  const cards = document.querySelectorAll("[data-github-api]");
+
+  cards.forEach(async (card) => {
+    const username = card.getAttribute("data-username");
+    const profile = card.querySelector(".github-profile");
+    const avatar = card.querySelector("[data-avatar]");
+    const name = card.querySelector("[data-name]");
+    const bio = card.querySelector("[data-bio]");
+    const repos = card.querySelector("[data-repos]");
+    const followers = card.querySelector("[data-followers]");
+    const updated = card.querySelector("[data-updated]");
+
+    try {
+      const response = await fetch(`https://api.github.com/users/${username}`, {
+        headers: { Accept: "application/vnd.github+json" }
+      });
+
+      if (!response.ok) {
+        throw new Error("GitHub API request failed");
+      }
+
+      const data = await response.json();
+      const updatedDate = new Intl.DateTimeFormat("zh-CN", {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+      }).format(new Date(data.updated_at));
+
+      profile?.setAttribute("data-state", "ready");
+      if (avatar) {
+        avatar.innerHTML = `<img src="${data.avatar_url}" alt="${data.login} 的 GitHub 头像" loading="lazy" />`;
+      }
+      if (name) name.textContent = data.name || data.login;
+      if (bio) bio.textContent = data.bio || "GitHub 公开主页";
+      if (repos) repos.textContent = String(data.public_repos ?? 0);
+      if (followers) followers.textContent = String(data.followers ?? 0);
+      if (updated) updated.textContent = updatedDate;
+    } catch {
+      profile?.setAttribute("data-state", "error");
+      if (bio) bio.textContent = "暂时无法读取 GitHub API，稍后刷新即可。";
+    }
+  });
+</script>
+
+<style>
+  .github-api-card {
+    margin-top: 24px;
+  }
+
+  .github-api-card h3 {
+    margin: 0 0 8px;
+    font-size: 1.45rem;
+  }
+
+  .github-api-card p:not(.eyebrow) {
+    margin: 0;
+  }
+
+  .github-profile {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 16px;
+    align-items: center;
+    margin-top: 22px;
+  }
+
+  .avatar-placeholder {
+    width: 72px;
+    height: 72px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: var(--surface-soft);
+  }
+
+  .avatar-placeholder img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .github-profile strong,
+  .github-profile span {
+    display: block;
+  }
+
+  .github-profile strong {
+    font-size: 1.18rem;
+  }
+
+  .github-profile span {
+    color: var(--muted);
+  }
+
+  .api-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .api-stats div {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px;
+    background: var(--surface-soft);
+  }
+
+  .api-stats strong,
+  .api-stats span {
+    display: block;
+  }
+
+  .api-stats strong {
+    font-size: 1.3rem;
+  }
+
+  .api-stats span {
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+
+  .api-actions {
+    margin-top: 20px;
+  }
+
+  @media (max-width: 640px) {
+    .api-stats {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,82 @@
+---
+import { getCollection } from "astro:content";
+import Hero from "@components/Hero.astro";
+import ProjectCard from "@components/ProjectCard.astro";
+import PostList from "@components/PostList.astro";
+import SectionHeader from "@components/SectionHeader.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { researchAreas } from "@data/site";
+import { withBasePath } from "../utils/paths";
+
+const projects = (await getCollection("projects"))
+  .filter((project) => project.data.featured)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+
+const posts = (await getCollection("blog"))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 4);
+---
+
+<BaseLayout>
+  <Hero />
+
+  <section class="container page">
+    <SectionHeader
+      eyebrow="Research"
+      title="研究方向"
+    />
+    <div class="grid three">
+      {
+        researchAreas.map((area) => (
+          <article class="card pad">
+            <h3>{area.title}</h3>
+            <p class="muted">{area.summary}</p>
+            <a class="text-link" href={withBasePath(area.href)}>{area.action}</a>
+            <div class="tag-list">
+              {area.keywords.map((keyword) => (
+                <span class="tag">{keyword}</span>
+              ))}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="container page compact">
+    <SectionHeader
+      eyebrow="Featured Projects"
+      title="代表项目"
+      description="项目重点展示研究问题、技术路线、亮点和可跳转的代码/资料链接。"
+    />
+    <div class="grid three">
+      {projects.map((project) => <ProjectCard project={project} />)}
+    </div>
+  </section>
+
+  <section class="container page compact">
+    <SectionHeader eyebrow="Latest Writing" title="最新文章" description="用于发布文献笔记、读书笔记和科研思考。" />
+    <PostList items={posts} basePath="/blog" />
+  </section>
+</BaseLayout>
+
+<style>
+  .compact {
+    padding-top: 32px;
+  }
+
+  h3 {
+    margin: 0 0 8px;
+  }
+
+  .text-link {
+    display: inline-flex;
+    margin-top: 12px;
+    color: var(--accent-strong);
+    font-weight: 800;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+</style>

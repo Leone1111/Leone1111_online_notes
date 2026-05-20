@@ -1,0 +1,56 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import GitHubApiCard from "@components/GitHubApiCard.astro";
+import SectionHeader from "@components/SectionHeader.astro";
+import { site } from "@data/site";
+import { withBasePath } from "../utils/paths";
+---
+
+<BaseLayout title="Contact | Leone1111" description="联系 Leone1111：邮箱、GitHub、Google Scholar 和简历。">
+  <section class="container page">
+    <SectionHeader
+      eyebrow="Contact"
+      title="联系方式"
+      description="如果你对材料机器学习、DFT 计算或相关项目感兴趣，可以通过下面入口联系我。"
+    />
+
+    <div class="grid two">
+      <a class="card pad contact-card" href={`mailto:${site.email}`}>
+        <span>邮箱</span>
+        <strong>{site.email}</strong>
+      </a>
+      <a class="card pad contact-card" href={site.github}>
+        <span>GitHub</span>
+        <strong>{site.github}</strong>
+      </a>
+      <a class="card pad contact-card" href={site.scholar} target="_blank" rel="noreferrer">
+        <span>Google Scholar</span>
+        <strong>查看学术主页</strong>
+      </a>
+      <a class="card pad contact-card" href={withBasePath("/resume.pdf")} target="_blank">
+        <span>个人简历</span>
+        <strong>下载 PDF</strong>
+      </a>
+    </div>
+
+    <GitHubApiCard />
+  </section>
+</BaseLayout>
+
+<style>
+  .contact-card {
+    display: grid;
+    gap: 8px;
+  }
+
+  .contact-card span {
+    color: var(--accent);
+    font-size: 0.82rem;
+    font-weight: 850;
+    text-transform: uppercase;
+  }
+
+  .contact-card strong {
+    overflow-wrap: anywhere;
+  }
+</style>

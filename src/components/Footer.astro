@@ -1,0 +1,31 @@
+---
+import { site } from "@data/site";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p>© {year} {site.name}</p>
+    <p>Materials · Machine Learning · DFT</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--line);
+    padding: 28px 0;
+    color: var(--muted);
+  }
+
+  .footer-inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .footer-inner p {
+    margin: 0;
+  }
+</style>

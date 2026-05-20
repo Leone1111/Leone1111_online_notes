@@ -1,0 +1,75 @@
+---
+import { withBasePath } from "../utils/paths";
+
+interface Item {
+  id: string;
+  collection?: string;
+  data: {
+    title: string;
+    description: string;
+    pubDate?: Date;
+    date?: Date;
+    tags?: string[];
+  };
+}
+
+interface Props {
+  items: Item[];
+  basePath: string;
+}
+
+const { items, basePath } = Astro.props;
+const formatDate = (date?: Date) =>
+  date
+    ? new Intl.DateTimeFormat("zh-CN", {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+      }).format(date)
+    : "";
+const hrefFor = (id: string) => withBasePath(`${basePath}/${id}`);
+---
+
+<div class="post-list">
+  {
+    items.map((item) => (
+      <article class="card pad post-item">
+        <div>
+          <p class="meta">{formatDate(item.data.pubDate || item.data.date)}</p>
+          <h3>
+            <a href={hrefFor(item.id)}>{item.data.title}</a>
+          </h3>
+          <p>{item.data.description}</p>
+          <div class="tag-list">
+            {(item.data.tags || []).map((tag) => (
+              <span class="tag">{tag}</span>
+            ))}
+          </div>
+        </div>
+      </article>
+    ))
+  }
+</div>
+
+<style>
+  .post-list {
+    display: grid;
+    gap: 16px;
+  }
+
+  .post-item h3 {
+    margin: 4px 0 8px;
+    font-size: 1.25rem;
+  }
+
+  .post-item p {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .post-item .meta {
+    color: var(--accent);
+    font-size: 0.82rem;
+    font-weight: 800;
+  }
+</style>

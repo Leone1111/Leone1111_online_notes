@@ -1,0 +1,239 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import SectionHeader from "@components/SectionHeader.astro";
+import { withBasePath } from "../../utils/paths";
+
+const posts = (await getCollection("blog"))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat("zh-CN", {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  }).format(date);
+
+const tags = Array.from(new Set(posts.flatMap((post) => post.data.tags)));
+const latestDate = posts[0]?.data.pubDate ?? new Date();
+const calendarYear = latestDate.getFullYear();
+const calendarMonth = latestDate.getMonth();
+const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+const firstWeekday = new Date(calendarYear, calendarMonth, 1).getDay();
+const activeDays = new Set(
+  posts
+    .filter((post) => post.data.pubDate.getFullYear() === calendarYear && post.data.pubDate.getMonth() === calendarMonth)
+    .map((post) => post.data.pubDate.getDate())
+);
+---
+
+<BaseLayout title="Blog | Leone1111" description="科研博客、读书笔记、文献笔记和科研思考。">
+  <section class="container page">
+    <SectionHeader
+      eyebrow="Blog"
+      title="科研博客"
+      description="用于整理读书笔记、文献笔记、科研思考和阶段性方法总结。"
+    />
+    <div class="blog-layout">
+      <div class="timeline">
+        {
+          posts.map((post) => (
+            <article class="timeline-item">
+              <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+              <div class="card pad compact-post">
+                <h3>
+                  <a href={withBasePath(`/blog/${post.id}`)}>{post.data.title}</a>
+                </h3>
+                <p>{post.data.description}</p>
+                <div class="tag-list">
+                  {post.data.tags.map((tag) => (
+                    <span class="tag">{tag}</span>
+                  ))}
+                </div>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <aside class="card pad blog-sidebar" aria-label="博客统计">
+        <p class="eyebrow">Calendar</p>
+        <h3>写作统计</h3>
+        <div class="stats-grid">
+          <div>
+            <strong>{posts.length}</strong>
+            <span>文章</span>
+          </div>
+          <div>
+            <strong>{tags.length}</strong>
+            <span>标签</span>
+          </div>
+        </div>
+        <p class="calendar-title">
+          {calendarYear}年{calendarMonth + 1}月
+        </p>
+        <div class="mini-calendar" aria-label="博客发布日期日历">
+          {["日", "一", "二", "三", "四", "五", "六"].map((day) => <span class="weekday">{day}</span>)}
+          {Array.from({ length: firstWeekday }).map(() => <span class="empty"></span>)}
+          {
+            Array.from({ length: daysInMonth }).map((_, index) => {
+              const day = index + 1;
+              return <span class:list={["day", activeDays.has(day) && "active"]}>{day}</span>;
+            })
+          }
+        </div>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .blog-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 26px;
+    align-items: start;
+  }
+
+  .timeline {
+    position: relative;
+    display: grid;
+    gap: 16px;
+    padding-left: 22px;
+  }
+
+  .timeline::before {
+    position: absolute;
+    top: 8px;
+    bottom: 8px;
+    left: 5px;
+    width: 2px;
+    background: var(--line);
+    content: "";
+  }
+
+  .timeline-item {
+    position: relative;
+    display: grid;
+    gap: 8px;
+  }
+
+  .timeline-item::before {
+    position: absolute;
+    top: 9px;
+    left: -22px;
+    width: 12px;
+    height: 12px;
+    border: 3px solid var(--surface);
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 1px var(--line);
+    content: "";
+  }
+
+  .timeline-item time {
+    color: var(--accent);
+    font-size: 0.82rem;
+    font-weight: 850;
+  }
+
+  .compact-post {
+    padding: 18px;
+  }
+
+  .compact-post h3 {
+    margin: 0 0 6px;
+    font-size: 1.12rem;
+  }
+
+  .compact-post p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  .blog-sidebar {
+    position: sticky;
+    top: 88px;
+  }
+
+  .blog-sidebar h3 {
+    margin: 0 0 14px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .stats-grid div {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 10px;
+    background: var(--surface-soft);
+  }
+
+  .stats-grid strong,
+  .stats-grid span {
+    display: block;
+  }
+
+  .stats-grid strong {
+    font-size: 1.35rem;
+  }
+
+  .stats-grid span {
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+
+  .calendar-title {
+    margin: 0 0 10px;
+    color: var(--muted);
+    font-weight: 800;
+  }
+
+  .mini-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+
+  .mini-calendar span {
+    display: grid;
+    min-height: 30px;
+    place-items: center;
+    border-radius: 6px;
+    font-size: 0.78rem;
+  }
+
+  .weekday {
+    color: var(--muted);
+    font-weight: 800;
+  }
+
+  .day {
+    border: 1px solid var(--line);
+    background: #fff;
+  }
+
+  .day.active {
+    border-color: var(--accent);
+    background: rgba(15, 118, 110, 0.12);
+    color: var(--accent-strong);
+    font-weight: 850;
+  }
+
+  @media (max-width: 860px) {
+    .blog-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .blog-sidebar {
+      position: static;
+    }
+  }
+</style>

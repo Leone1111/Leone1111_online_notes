@@ -1,0 +1,36 @@
+---
+import { getCollection, render } from "astro:content";
+import ContentLayout from "@layouts/ContentLayout.astro";
+import { withBasePath } from "../../utils/paths";
+
+export async function getStaticPaths() {
+  const projects = await getCollection("projects");
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project }
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+---
+
+<ContentLayout
+  title={project.data.title}
+  description={project.data.description}
+  date={project.data.date}
+  tags={project.data.tags}
+>
+  <div class="button-row content-actions">
+    <a class="button" href={withBasePath("/projects")}>返回项目目录</a>
+    {project.data.github && <a class="button primary" href={project.data.github} target="_blank" rel="noreferrer">GitHub</a>}
+    {project.data.download && <a class="button" href={project.data.download} target="_blank" rel="noreferrer">资料下载</a>}
+  </div>
+  <Content />
+</ContentLayout>
+
+<style>
+  .content-actions {
+    margin: 24px 0;
+  }
+</style>
