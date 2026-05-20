@@ -3,9 +3,22 @@ title: "高熵钠离子层状材料候选体系研究"
 description: "围绕高熵层状氧化物正极材料，结合文献调研、DFT 计算和机器学习筛选建立候选体系分析流程。"
 date: 2026-05-20
 status: "Research Project"
+category: "项目资料"
+visibility: "public"
 tags: ["High-entropy", "Sodium-ion", "DFT", "Machine Learning"]
 github: "https://github.com/Leone1111"
 download: "https://onedrive.live.com/"
+files:
+  - title: "高熵钠离子层状材料项目资料"
+    type: "pdf"
+    url: "https://onedrive.live.com/"
+    description: "用于放置项目说明、图表或阶段性汇总 PDF。"
+    size: "外部链接"
+  - title: "候选体系数据压缩包"
+    type: "zip"
+    url: "https://onedrive.live.com/"
+    description: "用于放置候选材料结构、计算结果或脚本压缩包。"
+    size: "外部链接"
 featured: true
 ---
 

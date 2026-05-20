@@ -1,0 +1,208 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import SectionHeader from "@components/SectionHeader.astro";
+import { withBasePath } from "../utils/paths";
+
+type FileType = "pdf" | "word" | "markdown" | "image" | "zip";
+
+const typeLabels: Record<FileType, string> = {
+  pdf: "PDF",
+  word: "Word",
+  markdown: "Markdown",
+  image: "图片",
+  zip: "ZIP"
+};
+
+const [blogPosts, notes, projects] = await Promise.all([
+  getCollection("blog", ({ data }) => !data.draft && data.visibility === "public"),
+  getCollection("notes", ({ data }) => data.visibility === "public"),
+  getCollection("projects", ({ data }) => data.visibility === "public")
+]);
+
+const resources = [
+  ...blogPosts.flatMap((post) =>
+    post.data.files.map((file) => ({
+      ...file,
+      sourceTitle: post.data.title,
+      sourceCategory: post.data.category,
+      sourceType: "科研/读书笔记",
+      sourceHref: `/blog/${post.id}`
+    }))
+  ),
+  ...notes.flatMap((note) =>
+    note.data.files.map((file) => ({
+      ...file,
+      sourceTitle: note.data.title,
+      sourceCategory: note.data.category,
+      sourceType: "轻量笔记",
+      sourceHref: `/notes/${note.id}`
+    }))
+  ),
+  ...projects.flatMap((project) =>
+    project.data.files.map((file) => ({
+      ...file,
+      sourceTitle: project.data.title,
+      sourceCategory: project.data.category,
+      sourceType: "代码项目 / 项目资料",
+      sourceHref: `/projects/${project.id}`
+    }))
+  )
+];
+
+const groupedResources = Object.entries(
+  resources.reduce(
+    (groups, resource) => {
+      groups[resource.type] = [...(groups[resource.type] || []), resource];
+      return groups;
+    },
+    {} as Record<FileType, typeof resources>
+  )
+);
+---
+
+<BaseLayout title="Resources | Leone1111" description="公开项目资料、笔记附件和文件下载入口。">
+  <section class="container page">
+    <SectionHeader
+      eyebrow="Resources"
+      title="资料库"
+      description="这里汇总公开内容中关联的 PDF、Word、Markdown、图片和 zip 文件。"
+    />
+
+    <article class="card pad admin-note">
+      <p class="eyebrow">Admin Upload</p>
+      <h3>管理员上传功能：后续版本开放</h3>
+      <p class="muted">
+        当前 V1.1 仍保持静态网站架构，不提供在线上传、在线编辑和在线删除。公开附件通过 Markdown frontmatter
+        里的 files 字段维护，文件本体建议放在 GitHub Releases、OneDrive、网盘或云存储。
+      </p>
+    </article>
+
+    {
+      resources.length === 0 ? (
+        <article class="card pad empty-state">
+          <h3>暂无公开附件</h3>
+          <p class="muted">给 Blog、Notes 或 Projects 的 frontmatter 添加 files 字段后，这里会自动出现下载入口。</p>
+        </article>
+      ) : (
+        <div class="resource-stack">
+          {groupedResources.map(([type, items]) => (
+            <section class="resource-group">
+              <div class="resource-group-header">
+                <h2>{typeLabels[type as FileType]}</h2>
+                <span>{items.length} 个文件</span>
+              </div>
+              <div class="resource-grid">
+                {items.map((item) => (
+                  <article class="card pad resource-card">
+                    <div>
+                      <p class="eyebrow">{item.sourceCategory}</p>
+                      <h3>{item.title}</h3>
+                      {item.description && <p class="muted">{item.description}</p>}
+                      <p class="resource-source">
+                        来源：<a href={withBasePath(item.sourceHref)}>{item.sourceTitle}</a>
+                      </p>
+                      <div class="tag-list">
+                        <span class="tag">{item.sourceType}</span>
+                        <span class="tag">{typeLabels[item.type]}</span>
+                        {item.size && <span class="tag">{item.size}</span>}
+                      </div>
+                    </div>
+                    <a class="button primary" href={item.url} target="_blank" rel="noreferrer">下载 / 打开</a>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+      )
+    }
+  </section>
+</BaseLayout>
+
+<style>
+  .admin-note {
+    margin-bottom: 26px;
+  }
+
+  .admin-note h3,
+  .empty-state h3 {
+    margin: 0 0 8px;
+  }
+
+  .admin-note p:not(.eyebrow),
+  .empty-state p {
+    margin: 0;
+  }
+
+  .resource-stack {
+    display: grid;
+    gap: 30px;
+  }
+
+  .resource-group-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+
+  .resource-group-header h2 {
+    margin: 0;
+    font-size: 1.55rem;
+  }
+
+  .resource-group-header span {
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 800;
+  }
+
+  .resource-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .resource-card {
+    display: flex;
+    min-height: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .resource-card h3 {
+    margin: 0 0 8px;
+    font-size: 1.18rem;
+  }
+
+  .resource-card p {
+    margin: 0;
+  }
+
+  .resource-source {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+
+  .resource-source a {
+    color: var(--accent-strong);
+    font-weight: 800;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  @media (max-width: 860px) {
+    .resource-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .resource-group-header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>

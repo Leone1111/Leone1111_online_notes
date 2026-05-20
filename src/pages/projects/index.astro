@@ -5,7 +5,9 @@ import ProjectCard from "@components/ProjectCard.astro";
 import SectionHeader from "@components/SectionHeader.astro";
 import { withBasePath } from "../../utils/paths";
 
-const projects = (await getCollection("projects")).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const projects = (await getCollection("projects"))
+  .filter((project) => project.data.visibility === "public")
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 const projectDirectory = [
   {

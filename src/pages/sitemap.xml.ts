@@ -1,7 +1,7 @@
 import { getCollection } from "astro:content";
 import type { APIRoute } from "astro";
 
-const staticPages = ["/", "/about", "/research", "/projects", "/blog", "/notes", "/contact"];
+const staticPages = ["/", "/about", "/research", "/projects", "/blog", "/notes", "/resources", "/contact"];
 const basePath = import.meta.env.BASE_URL || "/";
 
 function absoluteUrl(path: string, site: URL) {
@@ -13,9 +13,9 @@ function absoluteUrl(path: string, site: URL) {
 export const GET: APIRoute = async ({ site }) => {
   const siteUrl = site ?? new URL("https://leone1111.github.io/Leone1111_online_notes/");
   const [blogPosts, projects, notes] = await Promise.all([
-    getCollection("blog", ({ data }) => !data.draft),
-    getCollection("projects"),
-    getCollection("notes")
+    getCollection("blog", ({ data }) => !data.draft && data.visibility === "public"),
+    getCollection("projects", ({ data }) => data.visibility === "public"),
+    getCollection("notes", ({ data }) => data.visibility === "public")
   ]);
 
   const urls = [

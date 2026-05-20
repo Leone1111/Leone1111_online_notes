@@ -5,7 +5,7 @@ import SectionHeader from "@components/SectionHeader.astro";
 import { withBasePath } from "../../utils/paths";
 
 const posts = (await getCollection("blog"))
-  .filter((post) => !post.data.draft)
+  .filter((post) => !post.data.draft && post.data.visibility === "public")
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
 const formatDate = (date: Date) =>
@@ -47,6 +47,7 @@ const activeDays = new Set(
                 </h3>
                 <p>{post.data.description}</p>
                 <div class="tag-list">
+                  <span class="tag">{post.data.category}</span>
                   {post.data.tags.map((tag) => (
                     <span class="tag">{tag}</span>
                   ))}

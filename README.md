@@ -4,6 +4,33 @@
 
 你以后主要不需要改很多代码，大部分内容都集中在几个文件夹里。
 
+## V1.1 静态增强版说明
+
+当前版本仍然是静态网站，不包含管理员登录、在线上传、在线删除和在线编辑。公开内容通过 Markdown/MDX 文件维护，公开附件通过 frontmatter 里的 `files` 字段维护。
+
+支持的内容分类包括：
+
+- 科研笔记
+- 读书笔记
+- 代码项目
+- 项目资料
+
+支持的附件类型包括：
+
+- PDF
+- Word
+- Markdown
+- 图片
+- zip 压缩包
+
+资料库页面在：
+
+```text
+src/pages/resources.astro
+```
+
+网站导航里已经增加 `Resources` 入口。这个页面会自动汇总 Blog、Notes、Projects 中 `visibility: "public"` 的附件。
+
 ## 1. 本地打开网站
 
 在项目目录运行：
@@ -26,6 +53,28 @@ http://localhost:4321/Leone1111_online_notes/
 ```
 
 两个都可以。
+
+### 本地构建
+
+构建网站：
+
+```bash
+npm run build
+```
+
+构建成功后，Astro 会生成静态文件到：
+
+```text
+dist
+```
+
+注意：不要手动修改 `dist/`，它是构建结果，不是源代码。
+
+预览构建结果：
+
+```bash
+npm run preview
+```
 
 ## 2. 最常改的文件
 
@@ -185,7 +234,15 @@ src/content/blog/my-new-paper-note.md
 title: "文章标题"
 description: "文章简介"
 pubDate: 2026-05-20
+category: "科研笔记"
+visibility: "public"
 tags: ["DFT", "论文笔记", "材料"]
+files:
+  - title: "附件标题"
+    type: "pdf"
+    url: "https://你的公开文件链接"
+    description: "附件说明"
+    size: "2 MB"
 draft: false
 ---
 ```
@@ -209,6 +266,22 @@ draft: false
 ```md
 draft: true
 ```
+
+V1.1 推荐使用 `visibility` 控制公开状态：
+
+- `public`：公开展示。
+- `draft`：草稿，不在公开列表展示。
+- `private`：私有，不在公开列表展示。
+
+`files` 用来添加公开附件下载。支持的 `type` 有：
+
+- `pdf`
+- `word`
+- `markdown`
+- `image`
+- `zip`
+
+附件文件本体建议放在 GitHub Releases、OneDrive、网盘、Vercel Blob、Cloudflare R2 或 Supabase Storage。这里的 `url` 只填写公开下载链接。
 
 ## 7. 写项目作品
 
@@ -241,9 +314,17 @@ title: "项目标题"
 description: "项目简介"
 date: 2026-05-20
 status: "Research Project"
+category: "代码项目"
+visibility: "public"
 tags: ["DFT", "Machine Learning"]
 github: "https://github.com/你的用户名/项目仓库"
 download: "https://你的网盘链接"
+files:
+  - title: "项目压缩包"
+    type: "zip"
+    url: "https://你的公开下载链接"
+    description: "项目代码、说明文档或示例数据。"
+    size: "10 MB"
 featured: true
 ---
 ```
@@ -254,9 +335,12 @@ featured: true
 - `description`：项目简介
 - `date`：项目日期
 - `status`：项目状态，比如 Research Project / Code Project
+- `category`：内容分类，比如 代码项目 / 项目资料
+- `visibility`：公开状态，public / draft / private
 - `tags`：项目标签
 - `github`：GitHub 链接
 - `download`：OneDrive 或网盘链接
+- `files`：公开附件下载列表
 - `featured`：是否显示在首页代表项目里
 
 如果不想放到首页，把：
@@ -299,7 +383,15 @@ src/content/notes/my-small-note.md
 title: "笔记标题"
 description: "笔记简介"
 pubDate: 2026-05-20
+category: "科研笔记"
+visibility: "public"
 tags: ["科研记录"]
+files:
+  - title: "相关图片"
+    type: "image"
+    url: "https://你的公开图片链接"
+    description: "用于说明这条笔记的图片。"
+    size: "500 KB"
 ---
 
 这里写轻量笔记正文。
@@ -499,6 +591,53 @@ src/pages/404.astro
 ```text
 https://leone1111.github.io/Leone1111_online_notes/
 ```
+
+### 部署到 Vercel
+
+Vercel 适合部署 Astro 静态站。
+
+基本步骤：
+
+1. 打开 [https://vercel.com](https://vercel.com) 并登录。
+2. 选择 `Add New -> Project`。
+3. 导入 GitHub 仓库 `Leone1111_online_notes`。
+4. Framework Preset 选择 `Astro`。
+5. Build Command 使用：
+
+```bash
+npm run build
+```
+
+6. Output Directory 使用：
+
+```text
+dist
+```
+
+如果使用 Vercel 默认域名部署到根路径，通常需要把 `astro.config.mjs` 里的 `base` 改成 `/`。如果继续使用 GitHub Pages 的仓库路径 `/Leone1111_online_notes`，Vercel 上的路径可能会多一层。
+
+### 部署到 Netlify
+
+Netlify 也适合部署 Astro 静态站。
+
+基本步骤：
+
+1. 打开 [https://www.netlify.com](https://www.netlify.com) 并登录。
+2. 选择 `Add new site -> Import an existing project`。
+3. 导入 GitHub 仓库 `Leone1111_online_notes`。
+4. Build command 填：
+
+```bash
+npm run build
+```
+
+5. Publish directory 填：
+
+```text
+dist
+```
+
+和 Vercel 一样，如果部署到 Netlify 默认根路径，建议把 `astro.config.mjs` 里的 `base` 改成 `/`。
 
 ## 15. 如果仓库名或用户名变了
 

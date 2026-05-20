@@ -9,12 +9,12 @@ import { researchAreas } from "@data/site";
 import { withBasePath } from "../utils/paths";
 
 const projects = (await getCollection("projects"))
-  .filter((project) => project.data.featured)
+  .filter((project) => project.data.featured && project.data.visibility === "public")
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
 
 const posts = (await getCollection("blog"))
-  .filter((post) => !post.data.draft)
+  .filter((post) => !post.data.draft && post.data.visibility === "public")
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 4);
 ---
