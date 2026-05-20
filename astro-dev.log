@@ -138,3 +138,12 @@
 [2m21:14:17[22m [34m[200][39m /sitemap.xml [2m7ms[22m
 [2m21:14:18[22m [33m[404][39m /not-existing-page [2m8ms[22m
 [2m21:14:29[22m [34m[200][39m / [2m7ms[22m
+[2m21:57:57[22m [34m[200][39m /about [2m2ms[22m
+[2m22:01:56[22m [34m[200][39m /about [2m3ms[22m
+[2m22:01:56[22m [34m[200][39m /research [2m3ms[22m
+[2m22:01:56[22m [34m[200][39m /projects/high-entropy-sodium-layered-materials [2m3ms[22m
+[2m22:01:56[22m [34m[200][39m /blog [2m4ms[22m
+[2m22:01:56[22m [34m[200][39m /notes [2m4ms[22m
+[2m22:01:56[22m [34m[200][39m /contact [2m5ms[22m
+[2m22:01:56[22m [34m[200][39m / [2m4ms[22m
+[2m22:15:50[22m [34m[watch][39m /src/components/GitHubApiCard.astro?astro&type=style&index=0&lang.css
