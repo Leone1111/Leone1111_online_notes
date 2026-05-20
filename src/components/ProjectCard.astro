@@ -8,6 +8,7 @@ interface Props {
       title: string;
       description: string;
       status: string;
+      category?: string;
       tags: string[];
       github?: string;
       download?: string;
@@ -24,6 +25,7 @@ const { project } = Astro.props;
     <h3><a href={withBasePath(`/projects/${project.id}`)}>{project.data.title}</a></h3>
     <p>{project.data.description}</p>
     <div class="tag-list">
+      {project.data.category && <span class="tag">{project.data.category}</span>}
       {project.data.tags.map((tag) => <span class="tag">{tag}</span>)}
     </div>
   </div>

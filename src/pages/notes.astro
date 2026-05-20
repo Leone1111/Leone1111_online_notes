@@ -4,7 +4,9 @@ import BaseLayout from "@layouts/BaseLayout.astro";
 import SectionHeader from "@components/SectionHeader.astro";
 import { withBasePath } from "../utils/paths";
 
-const notes = (await getCollection("notes")).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const notes = (await getCollection("notes"))
+  .filter((note) => note.data.visibility === "public")
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 const formatDate = (date: Date) =>
   new Intl.DateTimeFormat("zh-CN", {
     year: "numeric",
@@ -32,6 +34,7 @@ const formatDate = (date: Date) =>
                 </h3>
                 <p class="muted">{note.data.description}</p>
                 <div class="tag-list">
+                  <span class="tag">{note.data.category}</span>
                   {note.data.tags.map((tag) => (
                     <span class="tag">{tag}</span>
                   ))}

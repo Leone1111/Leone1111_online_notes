@@ -2,7 +2,15 @@
 title: "DFT 计算记录应该保留哪些信息"
 description: "整理 DFT 项目中最容易遗漏、但复现实验时非常关键的信息。"
 pubDate: 2026-05-18
+category: "科研笔记"
+visibility: "public"
 tags: ["DFT", "科研记录", "可复现"]
+files:
+  - title: "DFT 计算记录模板"
+    type: "markdown"
+    url: "https://github.com/Leone1111/Leone1111_online_notes"
+    description: "用于后续替换为真实 DFT 记录模板或公开资料链接。"
+    size: "外部链接"
 draft: false
 ---
 

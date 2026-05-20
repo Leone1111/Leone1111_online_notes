@@ -1,0 +1,99 @@
+---
+interface FileItem {
+  title: string;
+  type: "pdf" | "word" | "markdown" | "image" | "zip";
+  url: string;
+  description?: string;
+  size?: string;
+}
+
+interface Props {
+  files?: FileItem[];
+  title?: string;
+}
+
+const { files = [], title = "关联附件" } = Astro.props;
+
+const typeLabels: Record<FileItem["type"], string> = {
+  pdf: "PDF",
+  word: "Word",
+  markdown: "Markdown",
+  image: "图片",
+  zip: "ZIP"
+};
+---
+
+{
+  files.length > 0 && (
+    <section class="file-downloads" aria-label={title}>
+      <p class="eyebrow">Downloads</p>
+      <h2>{title}</h2>
+      <div class="file-grid">
+        {files.map((file) => (
+          <a class="file-item" href={file.url} target="_blank" rel="noreferrer">
+            <span class="file-type">{typeLabels[file.type]}</span>
+            <strong>{file.title}</strong>
+            {file.description && <p>{file.description}</p>}
+            {file.size && <small>{file.size}</small>}
+          </a>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .file-downloads {
+    margin: 32px 0;
+  }
+
+  .file-downloads h2 {
+    margin: 0 0 16px;
+    font-size: 1.45rem;
+  }
+
+  .file-grid {
+    display: grid;
+    gap: 12px;
+  }
+
+  .file-item {
+    display: grid;
+    gap: 6px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px;
+    background: var(--surface);
+    text-decoration: none;
+  }
+
+  .file-item:hover {
+    border-color: rgba(15, 118, 110, 0.42);
+    transform: translateY(-1px);
+  }
+
+  .file-type {
+    width: fit-content;
+    border-radius: 999px;
+    padding: 2px 8px;
+    background: var(--surface-soft);
+    color: var(--accent);
+    font-size: 0.76rem;
+    font-weight: 850;
+  }
+
+  .file-item strong {
+    color: var(--ink);
+    font-size: 1.05rem;
+  }
+
+  .file-item p {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .file-item small {
+    color: var(--muted);
+    font-weight: 700;
+  }
+</style>

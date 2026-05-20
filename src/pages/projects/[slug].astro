@@ -1,10 +1,11 @@
 ---
 import { getCollection, render } from "astro:content";
+import FileDownloadList from "@components/FileDownloadList.astro";
 import ContentLayout from "@layouts/ContentLayout.astro";
 import { withBasePath } from "../../utils/paths";
 
 export async function getStaticPaths() {
-  const projects = await getCollection("projects");
+  const projects = await getCollection("projects", ({ data }) => data.visibility === "public");
   return projects.map((project) => ({
     params: { slug: project.id },
     props: { project }
@@ -26,6 +27,7 @@ const { Content } = await render(project);
     {project.data.github && <a class="button primary" href={project.data.github} target="_blank" rel="noreferrer">GitHub</a>}
     {project.data.download && <a class="button" href={project.data.download} target="_blank" rel="noreferrer">资料下载</a>}
   </div>
+  <FileDownloadList files={project.data.files} />
   <Content />
 </ContentLayout>
 
